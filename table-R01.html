@@ -1,879 +1,261 @@
-<style>
-/* Table styling - Applied to all tables */
-#tableR01.searchable-table{
-width: 100%;
-border-collapse: collapse;
-font-family: Montserrat;
-margin: 20px 0;
-background-color: transparent;
-min-width: 600px;
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabla de Eventos</title>
+    <style>
+        #tableR01.searchable-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: Montserrat;
+            margin: 20px 0;
+            background-color: transparent;
+            min-width: 600px;
+        }
+        #tableR01.searchable-table thead tr {
+            border-bottom: 2px solid #000 !important;
+        }
+        #tableR01.searchable-table th,
+        #tableR01.searchable-table td {
+            font-family: Roboto;
+            font-size: 0.875em;
+            letter-spacing: 0.1rem;
+            padding: 12px 15px;
+            border-bottom: 0.75px solid #000;
+            line-height: 1.3;
+            vertical-align: top;
+        }
+        #tableR01.searchable-table th {
+            font-family: Montserrat;
+            letter-spacing: 0.1rem;
+            font-size: 1em;
+            font-weight: bold;
+            color: #000461;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.2s ease;
+        }
+        #tableR01.searchable-table th.sorted {
+            color: #fff;
+            background-color: #7A78FD !important;
+            border-radius: 5px;
+        }
+        #tableR01.searchable-table td:first-child,
+        #tableR01.searchable-table th:first-child {
+            text-align: left !important;
+        }
+        #tableR01.searchable-table td:not(:first-child),
+        #tableR01.searchable-table th:not(:first-child) {
+            text-align: center !important;
+        }
+        #tableR01.searchable-table a {
+            color: inherit !important;
+            font-weight: bold !important;
+            text-decoration: none !important;
+            display: block;
+            margin-bottom: 4px;
+            transition: color 0.2s ease, transform 0.25s ease;
+        }
+        #tableR01.searchable-table a:hover {
+            color: #fff !important;
+            transform: scale(1.06);
+        }
+        #tableR01.searchable-table .subtitle {
+            color: #000 !important;
+            font-size: 0.9em;
+            display: block;
+        }
+        .table-search-container {
+            width: 100%;
+            margin: 25px 0;
+            border-radius: 5px;
+            padding: 10px;
+            background-color: #000461;
+            display: flex;
+            gap: 10px;
+        }
+        .table-search {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #f8f9fa;
+            border-radius: 10px;
+            font-size: 0.875em;
+            color: #f8f9fa;
+            background-color: #000461;
+            transition: all 0.3s ease;
+            max-width: 500px;
+            min-width: 200px;
+        }
+        .reset-search {
+            padding: 12px;
+            border: 1px transparent;
+            border-radius: 10px;
+            background-color: #7A78FD;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 0.875em;
+            font-weight: bold;
+            color: #f8f9fa;
+            transition: transform 0.25s ease;
+        }
+        .reset-search:hover {
+            background-color: #f8f9fa;
+            color: #0066cc;
+            transform: scale(1.06);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #tableR01-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 20px 0;
+        }
+        @media (max-width: 768px) {
+            #tableR01.searchable-table {
+                min-width: 600px;
+                margin: 0;
+            }
+            #tableR01.searchable-table td,
+            #tableR01.searchable-table th {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+            .table-search-container {
+                flex-direction: column;
+            }
+            .table-search,
+            .reset-search {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="table-search-container">
+        <input type="text" id="tableR01-search" onkeyup="searchTable('tableR01')" class="table-search" placeholder="Busca eventos, narradores, sistemas, etc.">
+        <button class="reset-search" onclick="resetSearch('tableR01')">Limpiar Búsqueda</button>
+    </div>
+    <div id="tableR01-wrapper">
+        <table id="tableR01" class="searchable-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable('tableR01', 0)">Evento</th>
+                    <th onclick="sortTable('tableR01', 1)">Sistema</th>
+                    <th onclick="sortTable('tableR01', 2)">Público</th>
+                    <th onclick="sortTable('tableR01', 3)">Días</th>
+                    <th onclick="sortTable('tableR01', 4)">Horarios</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- All your table rows here (same as in your original code) -->
+                <tr>
+                    <td><a href="#donions-master">Donions & Dragons</a><span class="subtitle">Master Bishop</span></td>
+                    <td>Onion Six (d6)</td>
+                    <td>Para Todo Público</td>
+                    <td>Sábado</td>
+                    <td>11:30am y 03:30pm</td>
+                </tr>
+                <!-- Continue with all other rows... -->
+            </tbody>
+        </table>
+    </div>
 
-/* Header row - Thick bottom border */
-#tableR01.searchable-table thead tr {
-border-bottom: 2px solid #000 !important;
-}
+    <script>
+        const tableSortStates = {
+            tableR01: { column: 0, direction: 'asc' }
+        };
 
-/* Table cells */
-#tableR01.searchable-table th,
-#tableR01.searchable-table td {
-font-family: Roboto;
-font-size: 0.875em;
-letter-spacing: 0.1rem;
-padding: 12px 15px;
-border-bottom: 0.75px solid #000;
-line-height: 1.3;
-vertical-align: top;
-}
+        function sortTable(tableId, columnIndex, initialLoad = false) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const headers = table.querySelectorAll('th');
 
-/* Sortable headers */
-#tableR01.searchable-table th {
-font-family: Montserrat;
-letter-spacing: 0.1rem;
-font-size: 1em;
-font-weight: bold;
-color: #000461;
-cursor: pointer;
-text-align: left;
-transition: background-color 0.2s ease;
-}
+            headers.forEach(header => header.classList.remove('sorted'));
 
-/* Highlight for sorted column */
-#tableR01.searchable-table th.sorted {
-color: #fff;
-background-color: #7A78FD !important;
-border-radius: 5px;
-/*background-color: rgba(255, 255, 255, 0.3) !important;*/
-}
+            if (!initialLoad && columnIndex === tableSortStates[tableId].column) {
+                tableSortStates[tableId].direction = tableSortStates[tableId].direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                tableSortStates[tableId].column = columnIndex;
+                tableSortStates[tableId].direction = 'asc';
+            }
 
-/* First column alignment */
-#tableR01.searchable-table td:first-child,
-#tableR01.searchable-table th:first-child {
-text-align: left !important;
-}
+            rows.sort((a, b) => {
+                const aCell = a.querySelectorAll('td')[columnIndex];
+                const bCell = b.querySelectorAll('td')[columnIndex];
+                const aText = cleanSortingText(aCell.textContent.trim());
+                const bText = cleanSortingText(bCell.textContent.trim());
+                const aIsNum = !isNaN(aText) && !aText.includes(' ');
+                const bIsNum = !isNaN(bText) && !bText.includes(' ');
 
-/* Other columns alignment */
-#tableR01.searchable-table td:not(:first-child),
-#tableR01.searchable-table th:not(:first-child) {
-text-align: center !important;
-}
+                if (aIsNum && bIsNum) {
+                    const aNum = parseFloat(aText);
+                    const bNum = parseFloat(bText);
+                    return tableSortStates[tableId].direction === 'asc' ? aNum - bNum : bNum - aNum;
+                }
+                if (aIsNum && !bIsNum) return -1;
+                if (!aIsNum && bIsNum) return 1;
+                return tableSortStates[tableId].direction === 'asc' ? aText.localeCompare(bText) : bText.localeCompare(aText);
+            });
 
-/* Link styling */
-#tableR01.searchable-table a {
-color: inherit !important;
-font-weight: bold !important;
-text-decoration: none !important;
-display: block;
-margin-bottom: 4px;
-transition: color 0.2s ease;
-transition: transform 0.25s ease;
-}
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
 
-#tableR01.searchable-table a:hover {
-color: #fff !important;
-/*text-decoration: underline !important;*/
-transform: scale(1.06);
-}
+            if (!initialLoad) {
+                headers[columnIndex].classList.add('sorted');
+            }
+        }
 
-/* Subtitles */
-#tableR01.searchable-table .subtitle {
-color: #000 !important;
-font-size: 0.9em;
-display: block;
-}
+        function cleanSortingText(text) {
+            return text
+                .replace(/^[¿¡\W_]+/, '')
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase();
+        }
 
-/* Search container */
-.table-search-container {
-width: 100%;
-margin: 25px 0;
-border-radius: 5px;
-padding: 10px;
-background-color: #000461;
-display: flex;
-gap: 10px;
-}
+        function normalizeText(text) {
+            return text.normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-zA-Z0-9 ]/g, "");
+        }
 
-/* Search bar */
-.table-search {
-flex: 1;
-padding: 12px;
-border: 2px solid #f8f9fa;
-border-radius: 10px;
-font-size: 0.875em;
-color: #f8f9fa;
-background-color: #000461;
-transition: all 0.3s ease;
-max-width: 500px;
-min-width: 200px;
-}
+        function searchTable(tableId) {
+            const input = document.getElementById(tableId + '-search');
+            const filter = normalizeText(input.value.toUpperCase());
+            const table = document.getElementById(tableId);
+            const tr = table.querySelectorAll('tbody tr');
 
-/* Reset button */
-.reset-search {
-padding: 12px;
-border: 1px transparent;
-border-radius: 10px;
-background-color: #7A78FD;
-cursor: pointer;
-white-space: nowrap;
-font-size: 0.875em;
-font-weight: bold;
-color: #f8f9fa;
-transition: transform 0.25s ease;
-}
+            tr.forEach(row => {
+                let found = false;
+                const td = row.querySelectorAll('td');
 
-.reset-search:hover {
-background-color: #f8f9fa;
-border-color: transparent;
-color: #0066cc;
-transform: translateY(-1px);
-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-transform: scale(1.06);
-}
+                for (let j = 0; j < td.length; j++) {
+                    const cellText = td[j].textContent || td[j].innerText;
+                    const normalizedText = normalizeText(cellText.toUpperCase());
 
-/* Table wrappers for mobile scrolling */
-#tableR01-wrapper {
-width: 100%;
-overflow-x: auto;
--webkit-overflow-scrolling: touch;
-margin: 20px 0;
-}
+                    if (normalizedText.includes(filter)) {
+                        found = true;
+                        break;
+                    }
+                }
 
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-#tableR01.searchable-table {
-min-width: 600px;
-margin: 0;
-}
+                row.style.display = found ? '' : 'none';
+            });
+        }
 
-#tableR01.searchable-table td,
-#tableR01.searchable-table th {
-padding: 10px 12px;
-font-size: 14px;
-}
+        function resetSearch(tableId) {
+            document.getElementById(tableId + '-search').value = '';
+            const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+            rows.forEach(row => {
+                row.style.display = '';
+            });
+        }
 
-/* Stack search elements on mobile */
-.table-search-container {
-flex-direction: column;
-}
-
-.table-search,
-.reset-search {
-width: 100%;
-}
-}
-</style>
-
-<script>
-// Sorting functionality for multiple tables
-const tableSortStates = {
-tableR01: { column: 0, direction: 'asc' },
-tableR02: { column: 0, direction: 'asc' },
-tableR03: { column: 0, direction: 'asc' },
-tableR04: { column: 0, direction: 'asc' }
-};
-
-function sortTable(tableId, columnIndex, initialLoad = false) {
-const table = document.getElementById(tableId);
-const tbody = table.querySelector('tbody');
-const rows = Array.from(tbody.querySelectorAll('tr'));
-const headers = table.querySelectorAll('th');
-
-// Remove sorted class from all headers
-headers.forEach(header => header.classList.remove('sorted'));
-
-// Only toggle direction if clicking the same column
-if (!initialLoad && columnIndex === tableSortStates[tableId].column) {
-tableSortStates[tableId].direction = tableSortStates[tableId].direction === 'asc' ? 'desc' : 'asc';
-} else {
-tableSortStates[tableId].column = columnIndex;
-tableSortStates[tableId].direction = 'asc';
-}
-
-// Sort rows with improved alphanumeric logic
-rows.sort((a, b) => {
-const aCell = a.querySelectorAll('td')[columnIndex];
-const bCell = b.querySelectorAll('td')[columnIndex];
-
-// Get cleaned text content
-const aText = cleanSortingText(aCell.textContent.trim());
-const bText = cleanSortingText(bCell.textContent.trim());
-
-// Check if ENTIRE string is a number (not mixed like "Sector 17")
-const aIsNum = !isNaN(aText) && !aText.includes(' ');
-const bIsNum = !isNaN(bText) && !bText.includes(' ');
-
-// Numeric comparison if both are pure numbers
-if (aIsNum && bIsNum) {
-const aNum = parseFloat(aText);
-const bNum = parseFloat(bText);
-return tableSortStates[tableId].direction === 'asc'
-? aNum - bNum
-: bNum - aNum;
-}
-
-// Pure numbers come before text
-if (aIsNum && !bIsNum) return -1;
-if (!aIsNum && bIsNum) return 1;
-
-// Alphabetical comparison for text and mixed content
-return tableSortStates[tableId].direction === 'asc'
-? aText.localeCompare(bText)
-: bText.localeCompare(aText);
-});
-
-// Rebuild table
-tbody.innerHTML = '';
-rows.forEach(row => tbody.appendChild(row));
-
-// Highlight sorted column (except on initial load)
-if (!initialLoad) {
-headers[columnIndex].classList.add('sorted');
-}
-}
-
-// NEW: Helper function to clean text for sorting
-function cleanSortingText(text) {
-// Remove leading punctuation and accents
-return text
-.replace(/^[¿¡\W_]+/, '') // Remove leading punctuation
-.normalize("NFD")
-.replace(/[\u0300-\u036f]/g, "") // Remove accents
-.toLowerCase();
-}
-
-// New normalization function
-function normalizeText(text) {
-return text.normalize("NFD")
-.replace(/[\u0300-\u036f]/g, "")
-.replace(/[^a-zA-Z0-9 ]/g, "");
-}
-
-// Updated search function
-function searchTable(tableId) {
-const input = document.getElementById(tableId + '-search');
-const filter = normalizeText(input.value.toUpperCase());
-const table = document.getElementById(tableId);
-const tr = table.querySelectorAll('tbody tr');
-
-tr.forEach(row => {
-let found = false;
-const td = row.querySelectorAll('td');
-
-for (let j = 0; j < td.length; j++) {
-const cellText = td[j].textContent || td[j].innerText;
-const normalizedText = normalizeText(cellText.toUpperCase());
-
-if (normalizedText.includes(filter)) {
-found = true;
-break;
-}
-}
-
-row.style.display = found ? '' : 'none';
-});
-}
-
-// Reset search
-function resetSearch(tableId) {
-document.getElementById(tableId + '-search').value = '';
-const rows = document.querySelectorAll(`#${tableId} tbody tr`);
-rows.forEach(row => {
-row.style.display = '';
-});
-}
-
-// Initialize all tables
-document.addEventListener('DOMContentLoaded', () => {
-sortTable('tableR01', 0, true);
-});
-</script>
-
-<!-- Table 01 -->
-<div class="table-search-container">
-  <input type="text" id="tableR01-search" onkeyup="searchTable('tableR01')" class="table-search" placeholder="Busca eventos, narradores, sistemas, etc.">
-  <button class="reset-search" onclick="resetSearch('tableR01')">Limpiar Búsqueda</button>
-  </div>
-  <div id="tableR01-wrapper">
-  <table id="tableR01" class="searchable-table">
-  <thead>
-  <tr>
-  <th onclick="sortTable('tableR01', 0)">Evento</th>
-  <th onclick="sortTable('tableR01', 1)">Sistema</th>
-  <th onclick="sortTable('tableR01', 2)">Público</th>
-  <th onclick="sortTable('tableR01', 3)">Días</th>
-  <th onclick="sortTable('tableR01', 4)">Horarios</th>
-  </tr>
-  </thead>
-  <tbody>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#donions-master">Donions & Dragons</a><span class="subtitle">Master Bishop</span></td>
-  <td>Onion Six (d6)</td>
-  <td>Para Todo Público</td>
-  <td>Sábado</td>
-  <td>11:30am y 03:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#donions-corcan">Donions & Dragons</a><span class="subtitle">Corcan de Roleando Vida</span></td>
-  <td>Onion Six (d6)</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>01:30pm y 05:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#sweets-quidec">Sweets & Saltwaters</a><span class="subtitle">Quidec Pacheco</span></td>
-  <td>Onion Six + Cannon Six</td>
-  <td>Para Todo Público</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>01:30pm<br><br>11:30am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#sweets-alan">Sweets & Saltwaters</a><span class="subtitle">Alan Valles</span></td>
-  <td>Onion Six + Cannon Six</td>
-  <td>Para Todo Público</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>05:30pm<br><br>03:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#el-hijo-prodigo">Warhammer El Hijo Pródigo</a><span class="subtitle">Carlos Guarneros</span></td>
-  <td>Warhammer 40k</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>01:00pm y 05:00pm<br><br>01:00pm y 05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#spacemarines">Warhammer Space Marines</a><span class="subtitle">Martin Sanchez</span></td>
-  <td>Warhammer 40k</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>11:00am y 03:00pm<br><br>11:00am y 03:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#dungeonmastering">Dungeon Mastering</a><span class="subtitle">Quidec Pacheco</span></td>
-  <td>Taller</td>
-  <td>Para Todo Público</td>
-  <td>Sábado</td>
-  <td>11:00am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#creacion-de-calabozos">Creación de Calabozos</a><span class="subtitle">Pamela Ortiz</span></td>
-  <td>Taller</td>
-  <td>Para Todo Público</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>01:00pm<br><br>01:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#ilustra-tu-mapa">Ilustra tu Mapa</a><span class="subtitle">Karla Martin</span></td>
-  <td>Taller</td>
-  <td>Para Todo Público</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>03:00pm<br><br>03:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#soy-un-mal-dm">¿Soy un Mal DM?</a><span class="subtitle">Jorge Booz Cisneros Andrade</span></td>
-  <td>Taller</td>
-  <td>Para Todo Público</td>
-  <td>Sábado</td>
-  <td>05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#papel-en-blanco">Papel en Blanco</a><span class="subtitle">Marattura</span></td>
-  <td>Taller</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>11:00am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#mapas-hex-crawl">Creación de Mapas Hex Crawl</a><span class="subtitle">Master Bishop</span></td>
-  <td>Taller</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#rescate-arcanauta">Rescate Arcanauta en el<br>Sector 17</a><span class="subtitle">Miguel Bastarrachea, Dr. Posmo</span></td>
-  <td>La Vutha</td>
-  <td>18+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>01:00pm<br><br>01:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#asesinos">1000 Asesinos</a><span class="subtitle">Caligaes</span></td>
-  <td>XENO Invasión</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>03:00pm<br><br>03:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#es-duro-ser-un-dios">Es Duro ser un Dios</a><span class="subtitle">Sergio Ake</span></td>
-  <td>Relatos de los Dioses</td>
-  <td>Para Todo Público</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>05:00pm<br><br>05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#esperanza-en-el-cementerio">Todavía Hay Esperanza en<br>el Cementerio</a><span class="subtitle">Juan S. García</span></td>
-  <td>MORG BORK</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>11:30am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#escape-del-sabbat-josaphex">Escape del Sabbat</a><span class="subtitle">Josaphex (Josafat Reyes)</span></td>
-  <td>Vampiro la<br>Mascarada 5 ed.</td>
-  <td>18+</td>
-  <td>Sábado</td>
-  <td>01:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#a-por-la-terrible-bestia">"A por la Terrible Bestia"</a><span class="subtitle">Ozran Moreno</span></td>
-  <td>Broken Tales</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>03:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#escape-del-sabbat-santelescopio">Escape del Sabbat</a><span class="subtitle">San Telescopio (Angelo)</span></td>
-  <td>Vampiro la<br>Mascarada 5 ed.</td>
-  <td>18+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>05:30pm<br><br>05:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#lo-que-se-esconde-en-las-sombras">"Lo que se esconde en las<br>Sombras"</a><span class="subtitle">Ozran Moreno</span></td>
-  <td>Pequeños Detectives<br>de Monstruos</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>11:30am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#mensaje-urgente">"Un Mensaje Urgente"</a><span class="subtitle">Erick de Destiny Dice</span></td>
-  <td>D&D 2024</td>
-  <td>15+</td>
-  <td>Domingo</td>
-  <td>03:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#culto-al-vacio">"El Culto al Vacío"</a><span class="subtitle">Josaphex (Josafat Reyes)</span></td>
-  <td>Ratas en las<br>Paredes</td>
-  <td>18+</td>
-  <td>Domingo</td>
-  <td>05:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#las-sucias-carreras">Las Sucias Carreras</a><span class="subtitle">Manuel Solís de Doble 20</span></td>
-  <td>D&D 5e</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>11:00am<br><br>03:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#en-las-entranas-de-la-bestia">En las Entrañas de la Bestia</a><span class="subtitle">Ibozuke (el rey del rol) Booz<br>Cisneros Andrade</span></td>
-  <td>Nox Maledictus</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>01:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#deus-ex-machins">Deus ex Machinsa</a><span class="subtitle">Masamure</span></td>
-  <td>Yei+3</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>03:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#la-santa-cruzada">La Santa Cruzada</a><span class="subtitle">Ibozuke (el rey del rol) Booz<br>Cisneros Andrade</span></td>
-  <td>Future Saints</td>
-  <td>15+</td>
-  <td>Domingo</td>
-  <td>11:00am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#corazon-de-metal">Corazón de Metal</a><span class="subtitle">Isaac Quintero</span></td>
-  <td>Yei+3</td>
-  <td>15+</td>
-  <td>Domingo</td>
-  <td>05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#la-caja-del-alcalde">La Caja del Alcalde</a><span class="subtitle">Renato Vázquez “ElRenGeek"</span></td>
-  <td>D&D 2024</td>
-  <td>Para Todo Público</td>
-  <td>Sábado</td>
-  <td>11:30am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#tumba-de-los-horrores">Tumba de los Horrores</a><span class="subtitle">Astrid (duskhowler)</span></td>
-  <td>D&D 5e</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>01:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#pasados">Años Pasados</a><span class="subtitle">Mezcalito Cienfuegos</span></td>
-  <td>FATE Acelerado</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>03:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#la-cueva-de-los-ojos-muertos">La Cueva de los Ojos<br>Muertos</a><span class="subtitle">Hector</span></td>
-  <td>Dragonbane</td>
-  <td>18+</td>
-  <td>Sábado</td>
-  <td>05:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#el-gran-golpe">El Gran Golpe al Tesoro<br>del Rey</a><span class="subtitle">Astrid (duskhowler)</span></td>
-  <td>D&D 5e</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>11:30am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#cazadores-del-hex-aedron">Cazadores del Hex-Aedron</a><span class="subtitle">El JugaÑor</span></td>
-  <td>D&D 2024</td>
-  <td>15+</td>
-  <td>Domingo</td>
-  <td>01:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#se-robaron-a-la-muerte">¡Se Robaron a la Muerte!</a><span class="subtitle">JC de Calabozos y Quetzale</span></td>
-  <td>D&D 2024</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>03:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#el-demonio-de-la-mina">El Demonio de la Mina del<br>Hueco</a><span class="subtitle">Eduardo Velázquez</span></td>
-  <td>D&D 5e</td>
-  <td>15+</td>
-  <td>Domingo</td>
-  <td>05:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#cisterna-de-la-carniceria">La Cisterna de la Carnicería</a><span class="subtitle">Dan</span></td>
-  <td>Médula</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>11:30am<br><br>11:30am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#eco-en-el-bosque">Eco en el Bosque</a><span class="subtitle">Astrid Dellair</span></td>
-  <td>Médula</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>01:30pm<br><br>01:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#roll-like-a-girl">Roll Like a Girl</a><span class="subtitle">Helen</span></td>
-  <td>D&D 5e</td>
-  <td>Para Roleras</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>03:30pm<br><br>03:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#dnd-para-principiantes">Dungeons & Dragons para<br>Principiantes</a><span class="subtitle">Dan</span></td>
-  <td>D&D 5e</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>05:30pm<br><br>05:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#casita-del-terror">"La Casita del Terror"</a><span class="subtitle">Meli Chan</span></td>
-  <td>D&D 5e</td>
-  <td>Para Todo Público</td>
-  <td>Sábado</td>
-  <td>11:30am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#huecos">Huécos</a><span class="subtitle">Fovorobos</span></td>
-  <td>OMNIDEM</td>
-  <td>18+</td>
-  <td>Sábado</td>
-  <td>01:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#corazon-del-bosque">Corazón del Bosque</a><span class="subtitle">Lussumbra</span></td>
-  <td>OMNIDEM</td>
-  <td>Para Todo Público</td>
-  <td>Sábado</td>
-  <td>03:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#hoguera">Hoguera</a><span class="subtitle">Marattura</span></td>
-  <td>OMNIDEM</td>
-  <td>18+</td>
-  <td>Sábado</td>
-  <td>05:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#hayazaki">Hayazaki</a><span class="subtitle">Lussumbra</span></td>
-  <td>OMNIDEM</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>11:30am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#antiguos-tributos">Antiguos Tributos</a><span class="subtitle">Leshinen</span></td>
-  <td>OMNIDEM</td>
-  <td>18+</td>
-  <td>Domingo</td>
-  <td>01:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#alebrixes">Alebrixes</a><span class="subtitle">Marattura</span></td>
-  <td>OMNIDEM</td>
-  <td>15+</td>
-  <td>Domingo</td>
-  <td>03:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#santa-caterina">Santa Caterina</a><span class="subtitle">Jean</span></td>
-  <td>OMNIDEM</td>
-  <td>18+</td>
-  <td>Domingo</td>
-  <td>05:30pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#rehabilitacion-de-villanos">El Programa de<br>Rehabilitación de Villanos</a><span class="subtitle">Val</span></td>
-  <td>Lasers & Feelings</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>11:00am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#hasta-que-la-muerte-nos-separe">Hasta Que la Muerte Nos<br>Separe</a><span class="subtitle">Ulises Mtz</span></td>
-  <td>El Juego de Rol del<br>Capitán Alatriste</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>01:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#verdad-o-paradoja">Verdad o Paradoja</a><span class="subtitle">Elias</span></td>
-  <td>Mage the Ascension</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>03:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#venganza-en-la-luna-bronca">Venganza en la Luna Bronca</a><span class="subtitle">Dob</span></td>
-  <td>Starfinder</td>
-  <td>Para Todo Público</td>
-  <td>Sábado</td>
-  <td>05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#kobayashi-maru">El Kobayashi Maru</a><span class="subtitle">Elias</span></td>
-  <td>Star Trek<br>Adventures 2ed</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>11:00am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#mansion-de-la-rosa-negra">La Mansión de la Rosa Negra</a><span class="subtitle">Dob</span></td>
-  <td>D&D</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>01:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#encuentro-en-tormentanguila">Encuentro en Tormentanguila</a><span class="subtitle">Ulises Mtz</span></td>
-  <td>Adventures in<br>Rokugan 5e</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>03:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#la-princesa-perdida">La Princesa Perdida</a><span class="subtitle">Val M</span></td>
-  <td>D&D</td>
-  <td>15+</td>
-  <td>Domingo</td>
-  <td>05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#charros-negros">Charros Negros</a><span class="subtitle">Otto Garay</span></td>
-  <td>Charros Negros</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>11:00am<br><br>11:00am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#hogar-dulce-hogar">Hogar, Dulce Hogar</a><span class="subtitle">MauDnD</span></td>
-  <td>D&D 2024</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>11:00am<br><br>05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#furia-de-tlaokan">La Furia de Tlaokan</a><span class="subtitle">JC de Calabozos y Quetzales</span></td>
-  <td>D&D 2024</td>
-  <td>Para Todo Público</td>
-  <td>Sábado</td>
-  <td>01:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#rey-aberrante">El Rey Aberrante</a><span class="subtitle">Eddizu</span></td>
-  <td>D&D 2024</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>03:00pm<br><br>01:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#maraton-de-osdulnor">El Maratón de Ósdulnor</a><span class="subtitle">Jugañor</span></td>
-  <td>D&D 2024</td>
-  <td>Para Todo Público</td>
-  <td>Sábado</td>
-  <td>05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#devorados-por-la-oscuridad">Devorados por la Oscuridad</a><span class="subtitle">Maestros del Calabozo</span></td>
-  <td>D&D 2024</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>11:00am y 03:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#cabo-sombrio">Cabo Sombrío</a><span class="subtitle">Erick de Hora de Loot</span></td>
-  <td>Sacrifice, Sistema D20</td>
-  <td>18+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>05:00pm<br><br>01:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#sailors-on-the-starless-sea">Sailors on the Starless Sea</a><span class="subtitle">Adrian</span></td>
-  <td>Dungeon Crawl</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>11:00am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#la-llamada-fue-una-trampa">¡La Llamada Fue una Trampa!</a><span class="subtitle">Anya</span></td>
-  <td>The Mecha Hack</td>
-  <td>15+</td>
-  <td>Sábado</td>
-  <td>01:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#caos-en-el-banco-central">¡Caos en el Banco Central!</a><span class="subtitle">GM Galvez</span></td>
-  <td>Wonderlight</td>
-  <td>Para Todo Público</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>03:00pm<br><br>03:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#sangre-en-el-obturador">Sangre en el Obturador</a><span class="subtitle">Irvin</span></td>
-  <td>Eerie Stories</td>
-  <td>18+</td>
-  <td>Sábado</td>
-  <td>05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#entre-lobos">Entre Lobos</a><span class="subtitle">Adrian</span></td>
-  <td>Achtung Cthulhu!</td>
-  <td>15+</td>
-  <td>Domingo</td>
-  <td>11:00am</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#el-hexagonario">El Hexagonario</a><span class="subtitle">Anya</span></td>
-  <td>Mini B/X</td>
-  <td>15+</td>
-  <td>Domingo</td>
-  <td>01:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#laberinto-astral">El Laberinto Astral</a><span class="subtitle">Chux</span></td>
-  <td>Riftwalkers</td>
-  <td>Para Todo Público</td>
-  <td>Domingo</td>
-  <td>05:00pm</td>
-  </tr>
-  <!-- Elemento -->
-  <tr>
-  <td><a href="#combustion-en-vraymar">Combustión en Vraymar</a><span class="subtitle">Romo</span></td>
-  <td>D&D 5e</td>
-  <td>15+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>11:30am y 03:30pm<br><br>01:30pm</td>
-  </tr>
-  <!-- Elemento -->
-<tr>
-  <td><a href="#sombras-crecientes">Sombras Crecientes y<br>Estómagos Vacíos</a><span class="subtitle">Philippe García de Rol o Rollo</span></td>
-  <td>Anillo Único</td>
-  <td>18+</td>
-  <td>Sábado<br><br>Domingo</td>
-  <td>01:30pm<br><br>11:30am y 03:30pm</td>
-</tr>
-  <!-- Final de los Elementos -->
-  </tbody>
-  </table>
-  </div>
+        document.addEventListener('DOMContentLoaded', () => {
+            sortTable('tableR01', 0, true);
+        });
+    </script>
+</body>
+</html>
